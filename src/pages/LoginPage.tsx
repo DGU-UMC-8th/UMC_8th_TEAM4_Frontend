@@ -1,12 +1,7 @@
 import useForm from "../hooks/useForm";
-import { useMemo } from "react";
-import { UserSigninInformation, validateSignin } from "../utils/validate";
+import { UserSignInformation, validateSignin } from "../utils/validate";
 import { useNavigate } from "react-router-dom";
-
-const initialValue = {
-  email: "",
-  passwd: "",
-};
+import { postSignin } from "../apis/auth.ts";
 
 const Loginpage = () => {
   const navigate = useNavigate();
@@ -16,25 +11,36 @@ const Loginpage = () => {
   };
 
   const { values, touched, errors, getInputProps } =
-    useForm<UserSigninInformation>({ initialValue, validate: validateSignin });
-
-  const handleSubmit = () => {
-    console.log("로그인 성공!", values);
-  };
+    useForm<UserSignInformation>({
+      initialValue: {
+        email: "",
+        passwd: "",
+      },
+      validate: validateSignin,
+    });
 
   // 오류가 하나라도 있거나, 입력값이 비어있으면 버튼을 비활성화
-  const isDisabled = useMemo(() => {
-    return (
-      Object.values(errors || {}).some((error: string) => error.length > 0) ||
-      Object.values(values).some((value: string) => value === "")
-    );
-  }, [errors, values]);
+  const isDisabled: boolean =
+    Object.values(errors || {}).some((error) => error.length > 0) ||
+    Object.values(values).some((value) => value === "");
+
+  const handleSubmit = async () => {
+    try {
+      const response = await postSignin({
+        email: values.email,
+        password: values.passwd, 
+      });
+      localStorage.setItem("accessToken", response.data.accessToken);
+    } catch (error) {
+      alert(error.message);
+    }
+  };
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-50 px-4">
       <div className="w-full max-w-sm p-6 bg-white rounded-xl shadow-md">
-  
-        {/* 상단 ← + 로그인 */}
+        {/* 뒤로가기 버튼 */}
+
         <div className="relative flex items-center justify-center mb-6">
           <button
             onClick={handleGoBack}
@@ -42,10 +48,12 @@ const Loginpage = () => {
           >
             &lt;
           </button>
+          {/* 로그인 타이틀 */}
+
           <h1 className="text-xl font-bold text-gray-800">로그인</h1>
         </div>
-  
-        {/* 입력 폼 */}
+
+        {/* 인풋 폼 */}
         <div className="flex flex-col gap-3">
           <input
             {...getInputProps("email")}
@@ -60,7 +68,7 @@ const Loginpage = () => {
           {errors?.email && touched?.email && (
             <div className="text-red-500 text-sm">{errors.email}</div>
           )}
-  
+
           <input
             {...getInputProps("passwd")}
             className={`w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-400 ${
@@ -74,7 +82,7 @@ const Loginpage = () => {
           {errors?.passwd && touched?.passwd && (
             <div className="text-red-500 text-sm">{errors.passwd}</div>
           )}
-  
+
           <button
             type="button"
             onClick={handleSubmit}
@@ -91,7 +99,6 @@ const Loginpage = () => {
       </div>
     </div>
   );
-  
-}
+};
 
 export default Loginpage;
