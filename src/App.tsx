@@ -5,6 +5,10 @@ import LoginPage from './pages/LoginPage'
 import HomeLayout from './layouts/HomeLayout'
 import SignupPage from './pages/SignupPage'
 import MyPage from './pages/MyPage'
+import NavBar from "../components/NavBar"
+// import GaugeBar from "../components/GaugeBar"
+import Button from "../components/Button"
+import VitaCheckPage from './pages/VitaCheckPage'
 
 const router = createBrowserRouter([
   {
@@ -27,6 +31,10 @@ const router = createBrowserRouter([
       {
         path: 'mypage',
         element: <MyPage />
+      },
+      {
+        path: 'vitacheck',
+        element: <VitaCheckPage />
       }
     ]
   }

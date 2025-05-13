@@ -1,41 +1,8 @@
-import { CommonResponse } from "./common";
+import axios from "axios";
 
-export type RequestSignUpDto = {
-  name: string;
-  email: string;
-  "bio?": string;
-  "avatar?": string;
-  password: string;
-};
-
-export type ResponseSignUpDto = CommonResponse<{
-  id: number;
-  name: string;
-  email: string;
-  bio: string | null;
-  avatar: string | null;
-  createdAt: Date;
-  updatedAt: Date;
-}>;
-
-export type RequestSignInDto = {
-  email: string;
-  password: string;
-};
-
-export type ResponseSignInDto = CommonResponse<{
-  id: number;
-  name: string;
-  accessToken: string;
-  refreshToken: string;
-}>;
-
-export type ResponseMyInfoDto = CommonResponse<{
-  id: number;
-  name: string;
-  email: string;
-  bio: string | null;
-  avatar: string | null;
-  createdAt: Date;
-  updatedAt: Date;
-}>;
+export const axiosInstance = axios.create({
+  baseURL: import.meta.env.VITE_SERVER_API_URL,
+  headers: {
+    Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+  },
+});
